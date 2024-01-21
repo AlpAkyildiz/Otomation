@@ -1,0 +1,400 @@
+#include<iostream>
+#include<fstream>
+#include<locale.h>
+#include<cstring>
+#include<math.h>
+#include<time.h>
+#include<stdlib.h>
+#include<conio.h>
+#include<iomanip>
+using namespace std;
+struct Coin
+{
+	char adi[10];
+	float miktari;
+};
+struct Kullanici
+{
+		char ad[80];
+		char soyad[80];
+		char yas[4];
+		char cinsiyet;
+		Coin coin;
+		int hesap_no;
+};
+
+void KullaniciEkle();
+void KullaniciListeleme();
+void KullaniciArama();
+void KullaniciSil();
+void KullaniciDuzenle();
+
+
+int main()
+{
+		setlocale(LC_ALL,"Turkish");
+	 	char anamenu;
+	do{
+	system("cls");  
+
+	cout << "|-------Hosgeldiniz--------|" << endl ;
+	cout << "|      Secim Yapiniz       |" << endl ;
+	cout << "|   1- Kullanıcı Ekleme    |" << endl ;
+	cout << "|   2- Kullanıcı Listeleme |" << endl ;
+	cout << "|   3- Kullanıcı Arama     |" << endl ;
+	cout << "|   4- Kullanıcı Sil       |" << endl ; 
+	cout << "|   5- Kullanıcı Duzenle   |" << endl ;
+	cout << "|--------------------------|" << endl ;
+	char secim;
+	cin>>secim;
+	
+		
+	switch(secim) 
+	{
+		case '1' : 
+		{
+		KullaniciEkle();
+		break;	
+		}
+		case '2' : 
+		{
+		 KullaniciListeleme();
+		 break;
+		}
+		case '3' : 
+		{
+		 KullaniciArama();
+		 break;
+		}
+		case '4' : 
+		{
+		 KullaniciSil();
+		 break;
+		}
+		case '5' : 
+		{
+	 	 KullaniciDuzenle();
+		 break;
+		}
+	
+			
+			default :
+				cout<<"Böyle bir işlem bulunamadı."<<endl;
+	}
+	
+	cout << "Ana menüye Dönmek için: a basın çıkmak için: c" <<endl ; 
+	anamenu=getche();
+	
+    }while(anamenu=='a');
+     
+	return 0 ;
+}
+
+Kullanici hesap;
+
+void KullaniciEkle()
+{
+	ofstream yaz("Kullanıcı.dat",ios::binary |ios::app);
+	char secim;
+	int adet=0;
+	string kova;
+	srand(time(0));
+	do{
+	cout << "Kullanıcı Ad Giriniz" << endl;
+	cin>> hesap.ad;
+	cout << "Kullanıcı Soyad Giriniz" << endl;
+	cin>> hesap.soyad;
+	cout<< "Kullanıcı yas giriniz" << endl;
+	cin>>hesap.yas;
+	cout << "Kullanıcı Cinsiyet Giriniz (E/K)" << endl;
+	cin>>hesap.cinsiyet;
+	
+	cout<<"Kullanıcı kripto para adını giriniz"<<endl;
+	cout<<"Örn: Bitcoin,Dogecoin,Ethereum,Cardano,Tether,Ripple,Solana,Polkadot"<<endl;
+	cin>>hesap.coin.adi;
+	cout<<"Kullanıcı kripto para miktarını giriniz"<<endl;
+	cin>>hesap.coin.miktari;
+	cout<<"Hesap numarası gir:\t"<<endl;
+	cin>>hesap.hesap_no;
+	yaz.write((char*)&hesap, sizeof(hesap));	
+	adet++;	
+	cout << "Baska Kullanıcı Eklemek Istermisin (E/H)" << endl;
+	secim=getche();
+	cout << endl;
+	}while(secim=='e' || secim=='E');
+	
+	cout << adet << " adet Kullanıcı Ekledi.." << endl;
+	
+	yaz.close();
+}
+void KullaniciListeleme()
+{
+
+ifstream oku("Kullanıcı.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kayits=oku.tellg()/sizeof(hesap);
+	cout << "Toplam Ogrenci Kayit Sayisi:"<< kayits << endl;
+	
+	if(kayits>0)
+	{
+		for(int i=0; i<kayits;i++)
+		{
+			oku.seekg(i*sizeof(hesap));
+			oku.read((char*)&hesap, sizeof(hesap));	
+		
+			cout << i+1 << ". Kullanıcının Bilgileri:"<< endl;
+			cout << "Kullanıcının Adi:\t"<< hesap.ad <<endl ;
+			cout << "Kullanıcının Soyadi:\t"<< hesap.soyad <<endl ;
+			cout << "Kullanıcının No:\t"<< hesap.hesap_no <<endl ;
+			cout<<"Kullanıcının yaşı:\t"<< hesap.yas<<endl;
+			if(hesap.cinsiyet=='e' ||hesap.cinsiyet=='E')
+			cout << "Kullanıcının Cinsiyet: ERKEK " <<endl ;
+			else if(hesap.cinsiyet=='k' || hesap.cinsiyet=='K')
+			cout << "Kullanıcının Cinsiyet: KADIN " <<endl ;
+			cout<<"Aldığı coin adı:\t"<<hesap.coin.adi<<endl;
+			cout<<"Aldığı coin miktarı:\t"<<hesap.coin.miktari<<endl;
+			
+		}
+		
+		
+	}
+	else
+	cout << "Kayit Bulunamadi..." << endl;
+
+	oku.close();
+}
+void KullaniciArama()
+{
+	ifstream oku("Kullanıcı.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+	int kayitsayisi=oku.tellg()/sizeof(hesap);
+
+
+cout <<"Aranan Hesap Numarasını Giriniz"<< endl;
+int hesap_ara;
+cin>> hesap_ara;
+	
+	if(kayitsayisi>0)
+	{
+		for(int i=0; i<kayitsayisi;i++)
+		{
+			
+			oku.seekg(i*sizeof(hesap));
+			oku.read((char*)&hesap, sizeof(hesap));
+			
+			if(hesap.hesap_no==hesap_ara)
+			{
+			cout <<  "Bulunan Kullanıcının Bilgileri"<< endl;
+			cout << "Kullanıcı Adi: "<< hesap.ad <<endl ;
+			cout << "Kullanıcı Soyadi: "<< hesap.soyad <<endl ;
+			cout << "Kullanıcı No: "<< hesap.hesap_no <<endl ;
+			cout<<"Kullanıcının yaşı:\t"<< hesap.yas<<endl;
+			if(hesap.cinsiyet=='e' || hesap.cinsiyet=='E')
+			cout << "Kullanıcı Cinsiyet: ERKEK " <<endl ;
+			else if(hesap.cinsiyet=='k' || hesap.cinsiyet=='K')
+			cout << "Kullanıcı Cinsiyet: KADIN " <<endl ;
+			cout<<"Aldığı coin adı:\t"<<hesap.coin.adi<<endl;
+			cout<<"Aldığı coin miktarı:\t"<<hesap.coin.miktari<<endl;
+		    }
+		}
+		
+		
+	}
+	else
+	cout << "Kayit Bulunamadi..." << endl;
+
+	oku.close();
+}
+void KullaniciSil()
+{
+	int hesapno;
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("Kullanıcı.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kayitsayi=oku.tellg()/sizeof(hesap);
+	
+     cout<<"Kaydini Sileceginiz Ogrenci No Giriniz : ";
+     cin>>hesapno;
+
+     for(int i=0;i<kayitsayi;i++)
+     {
+            oku.seekg(i*sizeof(hesap));
+			oku.read((char*)&hesap, sizeof(hesap));
+			
+     if(hesap.hesap_no==hesapno)
+       {
+                 cout<<endl;
+                 cout<<"Kullanıcı Adı "<<hesap.ad<<endl;
+                  cout<<"Kullanıcı Soyadı	 : "<<hesap.soyad<<endl;
+                   cout<<"Kullanıcı Numarası : "<<hesap.hesap_no<<endl;
+                 cout<<"Kullanıcı Yaşı:\t"<<hesap.yas<<endl;
+                 if(hesap.cinsiyet=='e'||hesap.cinsiyet=='E')
+                 cout<<"Erkek";
+                 if(hesap.cinsiyet=='k'||hesap.cinsiyet=='K')
+                 cout<<"Bayan";
+                 cout<<"Kullanıcının aldığı coin:\t"<<hesap.coin.adi<<endl;
+                cout<<"Kullanıcı aldığı coin miktarı:\t"<<hesap.coin.miktari<<endl;
+         	 				  
+                cout<<"\n\n Silmek Istediginiz Kayit Bu Mu? [E/H] : ";
+                 secim=getche();
+            if(secim == 'H' || secim == 'h')
+              {      
+			    Kullanici y_hesap;
+                ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+                
+                strcpy(y_hesap.ad,hesap.ad);
+                strcpy(y_hesap.soyad,hesap.soyad);
+                y_hesap.hesap_no=hesap.hesap_no;
+                strcpy(y_hesap.yas,hesap.yas);
+                y_hesap.cinsiyet=hesap.cinsiyet;
+                strcpy(y_hesap.coin.adi,hesap.coin.adi);
+                y_hesap.coin.miktari=hesap.coin.miktari;
+                        
+                y_dosya.write((char*)&hesap, sizeof(hesap));
+                y_dosya.close();
+              }
+            if(secim=='e'||secim=='E')
+              {
+   			   	var=true;
+  		 	  }
+  		 	  else
+             {
+              Kullanici y_hesap;
+              ofstream y_dosya("Yedek.dat",ios::app|ios::binary);
+              
+              strcpy(y_hesap.ad,hesap.ad);
+              strcpy(y_hesap.soyad,hesap.soyad);
+            hesap.hesap_no=y_hesap.hesap_no;
+              strcpy(y_hesap.yas,hesap.yas);
+              hesap.cinsiyet=y_hesap.cinsiyet;
+              strcpy(y_hesap.coin.adi,hesap.coin.adi);
+                y_hesap.coin.miktari=hesap.coin.miktari;
+                       
+              y_dosya.write((char*)&hesap, sizeof(hesap));
+              y_dosya.close();
+             }
+        }
+            
+     }
+    oku.close();
+    if(var=true)
+    {
+               remove("Kullanıcı.dat");
+               rename("Yedek.dat","Kullanıcı.dat");
+               cout<<"\n Kayit Silindi"<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\n Kayit Bulunamadi"<<endl;                  
+    }
+	
+	
+}
+void KullaniciDuzenle()
+{
+	int hesapno;
+     char secim= ' ';
+     bool var=false;
+     
+    ifstream oku("Kullanıcı.dat",ios::binary |ios::app);
+	
+	oku.seekg(0,ios::end);
+
+	int kayits=oku.tellg()/sizeof(hesap);
+		
+     cout<<"Kaydini Duzelteceginiz Hesabın Numarasını Giriniz : ";
+     cin>>hesapno;
+
+     for(int i=0;i<kayits;i++)
+     {
+            oku.seekg(i*sizeof(hesap));
+			oku.read((char*)&hesap, sizeof(hesap));
+			
+     		if(hesap.hesap_no==hesapno)
+     		  {
+     		  	
+                 cout<<endl;
+                 cout<<"Kullanıcının Adı :\t"<<hesap.ad<<endl;
+                 cout<<"Kullanıcının Soyadı:\t"<<hesap.soyad<<endl;
+                 cout<<"Kullanıcının Yaşı:\t"<<hesap.yas<<endl;
+                 cout<<"Kullanıcının Hesap Numarası:\t"<<hesap.hesap_no<<endl;
+                 cout<<"Kullanıcının Cinsiyeti:\t";
+                 if(hesap.cinsiyet=='e'||hesap.cinsiyet=='E')
+                 cout<<"Erkek"<<endl;
+                 if(hesap.cinsiyet=='k'||hesap.cinsiyet=='K')
+                 cout<<"Bayan"<<endl;
+                 cout<<"Kullanıcının aldığı coin:\t"<<hesap.coin.adi<<endl;
+                 cout<<"Kullanıcının aldığı coin miktarı:\t"<<hesap.coin.miktari<<endl;
+                 
+                  cout<<"\n\nDuzeltmek Istediginiz Kayit Bu Mu? [E/H] : ";
+                  secim=getche();
+                  if(secim == 'E' || secim == 'e')
+                  {
+                     	var=true;
+                        ofstream dosya("Yedek.dat",ios::app|ios::binary);
+                        cout << "\nKullanıcı Adını Giriniz" << endl;
+						cin>> hesap.ad;
+						cout << "Kullanıcı Soyad Giriniz" << endl;
+						cin>> hesap.soyad;
+						cout<<"Kullanıcının Yaşını Giriniz:\t"<< endl;
+						cin>>hesap.yas;	
+						cout << "Kullanıcı Cinsiyet Giriniz (E/K)" << endl;
+						hesap.cinsiyet=getche();
+						cout << endl;
+						cout<<"Kullanıcı kripto para adını giriniz"<<endl;
+						cin>>hesap.coin.adi;
+						cout<<"Kullanıcı kripto para miktarını giriniz"<<endl;
+						cin>>hesap.coin.miktari;
+		  
+                        dosya.write((char*)&hesap, sizeof(hesap));
+                        dosya.close();
+            	  }
+            	 else
+                 	{
+                         Kullanici y_hesap;		
+                         ofstream y_dosya;
+                         y_dosya.open("Yedek.dat",ios::app|ios::binary);
+                         
+                    	 strcpy(y_hesap.ad,hesap.ad);
+            			 strcpy(y_hesap.soyad,hesap.soyad);
+            			hesap.hesap_no=y_hesap.hesap_no;
+            			 strcpy(y_hesap.yas,hesap.yas);
+             			 y_hesap.cinsiyet=hesap.cinsiyet;
+             			 strcpy(y_hesap.coin.adi,hesap.coin.adi);
+              			  y_hesap.coin.miktari=hesap.coin.miktari;
+             			 
+                         
+             			 y_dosya.write((char*)&y_hesap, sizeof(y_hesap));
+                         y_dosya.close();
+                   }
+     }
+ }
+    oku.close();
+    if(var)
+    {
+               remove("Kullanıcı.dat");
+               rename("Yedek.dat","Kullanıcı.dat");
+               cout<<"\nKayit Duzeltildi."<<endl;
+    }
+    else
+    {
+               remove("Yedek.dat");
+               cout<<"\nKayit Bulunamadi"<<endl;                  
+    }
+}
+
+
+
+
+
+
+
+
+
